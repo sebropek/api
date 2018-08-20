@@ -35,12 +35,12 @@ class Api(Resource):
 	names[user_name] = request.get_json(force=True)
 	hw = HelloWorld(name=user_name, dateOfBirth=datetime.strptime(names[user_name]['dateOfBirth'], '%Y-%m-%d' ) )
 	try:
-       	  db.session.add(hw)
+	  db.session.add(hw)
 	  db.session.commit()
-          return '', 204
+	  return '', 204
 	except:
 	  db.session.rollback() 
-	  return 'user already exists', 500
+	  return json.dumps({'message': 'user already exists'}), 500
  	
 api.add_resource(Api, '/Hello/<string:user_name>')
 
