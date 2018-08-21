@@ -15,7 +15,7 @@ DB_NAME ?= api
 
 PROJECT_ID ?= test-project-179209
 
-build: build-db build-api push gcloud-config build-k8s
+build: gcloud-config build-db build-api push build-k8s
 
 gcloud-config: 
 	gcloud config set project $(PROJECT_ID)
@@ -37,7 +37,7 @@ build-api:
 			--force-rm -t $(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION) .
 
 build-db:
-	gcloud sql instances create hello-db-server --tier=db-n1-standard-2 --region=europe-west2 --assign-ip
+	gcloud sql instances create hello-db-server --tier=db-n1-standard-2 --assign-ip
 	gcloud sql users set-password root --host % --instance hello-db-server --password $(DB_PASS)
 	gcloud sql users create $(DB_USER) --instance hello-db-server --host % --password $(DB_PASS)
 	gcloud sql databases create $(DB_NAME) --instance=hello-db-server
@@ -64,4 +64,7 @@ destroy-k8s:
 	kubectl delete service hello-server
 	gcloud container clusters delete helloworld1
 
+destroy-db:
+	gcloud sql instances delete hello-db-server
 
+clean: destroy-k8s destroy-db
