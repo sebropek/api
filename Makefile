@@ -12,7 +12,6 @@ DB_PORT ?= 3306
 DB_USER ?= api
 DB_PASS ?= api
 DB_NAME ?= api
-DB_HOST = $(shell gcloud sql instances describe hello-db-server |grep ipAddress: | awk '{print $NF}')
 
 PROJECT_ID ?= test-project-179209
 
@@ -43,6 +42,8 @@ build-db:
 	gcloud sql users set-password root --host % --instance hello-db-server --password $(DB_PASS)
 	gcloud sql users create $(DB_USER) --instance hello-db-server --host % --password $(DB_PASS)
 	gcloud sql databases create $(DB_NAME) --instance=hello-db-server
+
+DB_HOST = $$( gcloud sql instances describe hello-db-server |grep ipAddress: | awk '{print $NF}')
 
 provision-db:
 	mysql -h $(DB_HOST) -P $(DB_PORT) -u $(DB_USER) -p$(DB_PASS) -D $(DB_NAME) < db.sql
