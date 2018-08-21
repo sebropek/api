@@ -50,7 +50,7 @@ provision-db:
 
 push:
 	gcloud auth configure-docker
-	docker push $(REGISTRY)/$(IMAGE):$(VERSION)
+	docker push $(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION)
 
 upgrade-api:
 	kubectl set image deployment/hello-server hello-server=$(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION)
