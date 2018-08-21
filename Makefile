@@ -43,7 +43,7 @@ build-db:
 	gcloud sql users create $(DB_USER) --instance hello-db-server --host % --password $(DB_PASS)
 	gcloud sql databases create $(DB_NAME) --instance=hello-db-server
 
-DB_HOST = $$( gcloud sql instances describe hello-db-server |grep ipAddress: | awk '{print $NF}')
+DB_HOST = $$( gcloud sql instances describe hello-db-server |grep ipAddress: | awk '{print $$NF}')
 
 provision-db:
 	mysql -h $(DB_HOST) -P $(DB_PORT) -u $(DB_USER) -p$(DB_PASS) -D $(DB_NAME) < db.sql
