@@ -39,7 +39,7 @@ build-api:
 
 build-db:
 	gcloud sql instances create hello-db-server --tier=db-n1-standard-2 --assign-ip
-	gcloud sql instances patch hello-db-server --authorized-networks 0.0.0.0/0
+	gcloud sql instances patch hello-db-server --authorized-networks 0.0.0.0/0 -q
 	gcloud sql users set-password root --host % --instance hello-db-server --password $(DB_PASS)
 	gcloud sql users create $(DB_USER) --instance hello-db-server --host % --password $(DB_PASS)
 	gcloud sql databases create $(DB_NAME) --instance=hello-db-server
@@ -68,6 +68,6 @@ destroy-k8s:
 	gcloud container clusters delete helloworld1
 
 destroy-db:
-	gcloud sql instances delete hello-db-server
+	gcloud sql instances delete hello-db-server -q
 
 clean: destroy-k8s destroy-db
