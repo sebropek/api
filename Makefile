@@ -15,7 +15,7 @@ DB_NAME ?= api
 
 PROJECT_ID ?= test-project-179209
 
-build: gcloud-config build-db build-api push build-k8s
+build: gcloud-config build-db provision-db build-api push build-k8s
 
 gcloud-config: 
 	gcloud config set project $(PROJECT_ID)
@@ -41,6 +41,8 @@ build-db:
 	gcloud sql users set-password root --host % --instance hello-db-server --password $(DB_PASS)
 	gcloud sql users create $(DB_USER) --instance hello-db-server --host % --password $(DB_PASS)
 	gcloud sql databases create $(DB_NAME) --instance=hello-db-server
+
+provision-db:
 	DB_HOST := $(shell gcloud sql instances describe hello-db-server |grep ipAddress: | awk '{print $NF}')
 	mysql -h $(DB_HOST) -P $(DB_PORT) -u $(DB_USER) -p$(DB_PASS) -D $(DB_NAME) < db.sql
 
