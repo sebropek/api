@@ -6,7 +6,7 @@ from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
 api = Api(app,default_mediatype='application/json')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/app/api-db.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////opt/app/api-db.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
