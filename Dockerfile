@@ -1,6 +1,4 @@
 FROM centos:7
-ENV http_proxy 10.0.2.2:23456
-ENV https_proxy 10.0.2.2:23456
 ARG DB_HOST
 ARG DB_PORT
 ARG DB_USER
