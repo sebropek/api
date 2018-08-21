@@ -13,9 +13,9 @@ DB_USER ?= api
 DB_PASS ?= api
 DB_NAME ?= api
 
-PROJECT_ID ?= qwerty
+PROJECT_ID ?= test-project-179209
 
-build: build-db build-api push gcloud-config build-k8s
+build: gcloud-config build-db build-api push build-k8s
 
 gcloud-config: 
 	gcloud config set project $(PROJECT_ID)
@@ -24,8 +24,9 @@ gcloud-config:
 build-k8s:
 	gcloud container clusters create helloworld1 --num-nodes=3 --zone europe-west2-a
 	gcloud container clusters get-credentials helloworld1
-	kubectl run hello-server --image=$(REGISTRY)/$(IMAGE) --port 8080
+	kubectl run hello-server --image=$(REGISTRY)/$(PROJECT_ID)/$(IMAGE) --port 8080
 	kubectl expose deployment hello-server --type=LoadBalancer --port 80 --target-port 8080
+	kubectl scale --replicas=3 deployment/hello-server
 
 build-api:
 	docker build 	--build-arg DB_HOST=$(DB_HOST) \
@@ -33,7 +34,7 @@ build-api:
 			--build-arg DB_USER=$(DB_USER) \
 			--build-arg DB_PASS=$(DB_PASS) \
 			--build-arg DB_NAME=$(DB_NAME) \
-			--force-rm -t $(IMAGE):$(VERSION) .
+			--force-rm -t $(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION) .
 
 build-db:
 	gcloud sql instances create hello-db-server --tier=db-n1-standard-2 --region=europe-west2 --assign-ip
@@ -45,16 +46,16 @@ build-db:
 
 push:
 	gcloud auth configure-docker
-	docker push $(REGISTRY)/$(IMAGE):$(VERSION)
+	docker push $(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION)
 
 upgrade-api:
-	kubectl set image deployment/hello-server hello-server=$(REGISTRY)/$(IMAGE):$(VERSION)
+	kubectl set image deployment/hello-server hello-server=$(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION)
 
 upgrade: build-api push upgrade-api
 
 
 start:
-	docker run -d --name $(NAME) $(PORTS) $(IMAGE):$(VERSION)
+	docker run -d --name $(NAME) $(PORTS) $(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION)
 
 stop:
 	docker stop $(NAME)
@@ -62,5 +63,4 @@ stop:
 destroy-k8s:
 	kubectl delete service hello-server
 	gcloud container clusters delete helloworld1
-
 

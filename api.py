@@ -43,7 +43,7 @@ class Api(Resource):
 	  db.session.rollback() 
 	  return json.dumps({'message': 'user already exists'}), 500
  	
-api.add_resource(Api, '/Hello/<string:user_name>')
+api.add_resource(Api, '/Hello2/<string:user_name>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
