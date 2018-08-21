@@ -24,7 +24,7 @@ gcloud-config:
 build-k8s:
 	gcloud container clusters create helloworld1 --num-nodes=3 --zone europe-west2-a
 	gcloud container clusters get-credentials helloworld1
-	kubectl run hello-server --image=$(REGISTRY)/$(PROJECT_ID)/$(IMAGE) --port 8080
+	kubectl run hello-server --image=$(REGISTRY)/$(PROJECT_ID)/$(IMAGE):$(VERSION) --port 8080
 	kubectl expose deployment hello-server --type=LoadBalancer --port 80 --target-port 8080
 	kubectl scale --replicas=3 deployment/hello-server
 
@@ -66,7 +66,7 @@ stop:
 
 destroy-k8s:
 	kubectl delete service hello-server
-	gcloud container clusters delete helloworld1
+	gcloud container clusters delete helloworld1 -q
 
 destroy-db:
 	gcloud sql instances delete hello-db-server -q
